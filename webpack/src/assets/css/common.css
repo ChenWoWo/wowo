@@ -1,0 +1,12 @@
+/* 公共样式 */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.button {
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}

@@ -1,0 +1,1 @@
+console.log('Debug info') // 或使用已定义的变量

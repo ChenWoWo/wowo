@@ -1,0 +1,13 @@
+.page3 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.page3 h1 {
+  margin-bottom: 20px;
+}
+
+/* Add other page3 specific styles... */

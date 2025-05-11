@@ -1,0 +1,13 @@
+.page2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.page2 h1 {
+  margin-bottom: 20px;
+}
+
+/* 添加其他页面专属样式... */

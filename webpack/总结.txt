@@ -1,0 +1,80 @@
+根据你的配置，这里分析几种常见原因及解决方案
+
+原因一：路由未使用懒加载
+// 错误写法（同步加载）
+import LoginPage from '@/components/LoginPage.vue'
+import OverviewPage from '@/components/OverviewPage.vue'
+
+// 正确写法（动态导入）
+const routes = [
+  {
+    path: '/login',
+    component: () => import('@/components/LoginPage.vue') // 添加动态导入
+  },
+  {
+    path: '/overview',
+    component: () => import('@/components/OverviewPage.vue')
+  }
+]
+原因二：公共依赖未合理拆分
+
+webpack.config.js
+
+optimization: {
+  splitChunks: {
+    chunks: 'all',
+    minSize: 20000, // 添加最小体积限制
+    maxSize: 102400, // 可选，限制最大体积
+    cacheGroups: {
+      vue: {
+        test: /[\\/]node_modules[\\/](vue|vue-router)[\\/]/,
+        name: 'vue',
+        priority: 20
+      },
+      elementPlus: { // 新增 ElementPlus 独立分包
+        test: /[\\/]node_modules[\\/]element-plus[\\/]/,
+        name: 'element-plus',
+        priority: 15
+      },
+      vendors: {
+        test: /[\\/]node_modules[\\/]/,
+        name: 'vendors',
+        priority: 10
+      }
+    }
+  }
+}
+原因三：入口文件全局引入
+main.js
+Apply
+// 错误写法（全局引入）
+import ElementPlus from 'element-plus'
+
+// 正确写法（通过自动导入插件按需加载）
+// 移除全局引入，保留空文件即可
+
+原因4：
+代码中存在静态引用（Static Import）
+问题描述：即使路由懒加载了，在其他组件或逻辑中仍可能通过静态 import 引用了内部页面模块。
+解决方法：
+检查是否有类似 import OverviewPage from '@/components/OverviewPage.vue' 的语句。
+替换为动态 import() 或仅在需要时异步加载。
+
+7. 预加载策略影响（Preload/Prefetch）
+问题描述：现代构建工具（如 Vite/Webpack）默认会对异步模块进行 Prefetch 或 Preload。
+验证方式：
+在浏览器开发者工具的 Network 面板中查看请求来源是否为 <prefetch>。
+解决方法：
+如果不希望某些页面提前加载，可关闭 Webpack 的 prefetch 功能，或手动控制加载时机。
+
+
+验证方法：
+
+执行分析命令查看模块关系
+
+bash
+npm run analyze
+在浏览器开发者工具查看网络请求：
+首次加载应只有：main.js + vue.js + vendors.js
+登录页不应加载 OverviewPage.js/Page2.js
+典型优化后加载量对比： | 页面 | 优化前加载量 | 优化后加载量 | |-------------|------------|------------| | 登录页 | 1.2MB | 300KB | | 概览页 | 1.2MB | 800KB (+500KB按需) |
